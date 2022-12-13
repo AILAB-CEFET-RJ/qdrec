@@ -23,6 +23,37 @@ def spaced_letters(text):
     text = text.replace('A P O S E N T A R', ' aposentar ')
     return text
 
+def spaced_letters(text):
+    text = text.replace('A P O S E N T A R', ' aposentar ')
+    text = text.replace('A N E X O I I I', 'ANEXO III')
+    text = text.replace('A N E X O I I', 'ANEXO II')
+    text = text.replace('A N E X O I V', 'ANEXO IV')
+    text = text.replace('A N E X O I X', 'ANEXO IX')
+    text = text.replace('A N E X O I', 'ANEXO I')
+    text = text.replace('A N E X O V I', 'ANEXO VI')
+    text = text.replace('A N E X O V I I', 'ANEXO VII')
+    text = text.replace('A N E X O V I I I', 'ANEXO VIII')
+    text = text.replace('A N E X O X I I I', 'ANEXO XIII')
+    text = text.replace('A N E X O X I I', 'ANEXO XII')
+    text = text.replace('A N E X O X I', 'ANEXO XI')
+    text = text.replace('A N E X O X', 'ANEXO X')
+    text = text.replace('A N E X O', 'ANEXO')
+    
+    text = text.replace("R E S O L V E", "RESOLVE")
+    text = text.replace('J u s t i f i c a t i v a', 'Justificativa')
+    text = text.replace("I P VA", "IPVA")
+    text = text.replace("S E C R E T A R I A D E E D U C A Ç Ã O", "SECRETARIA DE EDUCAÇÃO")
+    text = text.replace("PRE FEIT O", "PREFEITO")
+    text = text.replace("qui NTA-F Ei RA, 22 DE Ju LHO DE", "quinta-feira, 22 de Julho de")
+    text = text.replace("Ó R G Ã O RESPONSÁVE L SME", "ÓRGÃO RESPONSÁVEL SME")
+    text = text.replace("I P VA", "IPVA")
+    text = text.replace("R E C U R S O S : P r o g r a m a E s c o l a r A u t ô n o m a d e G e s t ã o", "RECURSOS: Programa Escolar Autônoma de Gestão")
+    #text = text.replace("I P VA", "IPVA")
+
+    text = text.replace("cartei-rinha", "carteirinha")
+    
+    return text
+
 def join_words(text):
     # Há muitas palavras assim: "res - ponsável"
     # Vou ter algum problema juntando coisa que não devia
@@ -226,12 +257,12 @@ def read_dicionario_br() -> pd.DataFrame:
                         names=header_list,
                         header=None,
                         sep=',')
-    
-    #Pendente: localizar a função que implementei tratando o "- " e validando no 'ptbr'.
     return df_ptbr
 
 def clean_and_save(text_list:list) -> None:
-    with open("de-para.csv", "w",encoding = 'utf-8') as f:
+    with open("de-para-ambiental.csv",
+              "a+",
+              encoding='utf-8') as f:
         for text in text_list:
             new_text = clean_text(text)
             f.write(f'{text}\t{new_text}\n')
@@ -244,13 +275,92 @@ def pipeline(df_path:str='dataset-tecnologias-educacao.csv') -> None:
                         level=logging.INFO)
     df = pd.read_csv(df_path)
 
-    df['cleaned_text'] = df['excerpt'].map(preprocess)
-    df['cleaned_text'] = df['cleaned_text'].apply(lambda txt:
+    df_ptbr = read_dicionario_br()
+
+    df['cleaned_text']=df['excerpt'].map(preprocess)
+    df['cleaned_text']=df['cleaned_text'].apply(lambda txt:
                                          find_dashes_and_replace_words(txt, 
                                                                        df_ptbr)
                                              )
-    df_ptbr = read_dicionario_br()
 
-    unique_text_list = df['cleaned_text'].unique()
+    unique_text_list=df['cleaned_text'].unique()
 
     clean_and_save(unique_text_list)
+
+def pipeline_multiprocess(df:pd.DataFrame) -> None:
+    date = datetime.datetime.now().strftime("%d%m%Y%H:%M")
+
+    df_unique_texts = deepcopy(df.drop_duplicates(subset=['excerpt']))
+
+    logging.basicConfig(filename=f'QD-scrap_google-{date}.log',
+                        level=logging.INFO)
+    
+    df_ptbr = read_dicionario_br()
+
+#    df['cleaned_text'] = df['excerpt'].map(preprocess)
+#    df['cleaned_text'] = df['cleaned_text'].apply(lambda txt:
+#                                         find_dashes_and_replace_words(txt, 
+#                                                                       df_ptbr)
+#                                             )
+    df_unique_texts['cleaned_text'] = df_unique_texts['excerpt'].map(preprocess)
+    df_unique_texts['cleaned_text'] = df_unique_texts['cleaned_text'].apply(lambda txt:
+                                         find_dashes_and_replace_words(txt, 
+                                                                       df_ptbr)
+                                             )
+
+
+    unique_text_list = df_unique_texts['cleaned_text'].unique()
+
+    clean_and_save(unique_text_list)
+
+    return df_unique_texts
+
+
+
+def clean(texts:pd.Series) -> pd.Series:
+
+    return texts.apply(lambda txt: clean_text(txt))
+
+
+from sqlalchemy import create_engine
+from sqlalchemy import text
+
+def clean_and_insert(df_splitted:pd.DataFrame()) -> None: 
+    engine = create_engine(f"sqlite:///queridodiario.db")
+    for index, row in df_splitted.iterrows():
+        
+        row['cleaned_text'] = clean_text(row['cleaned_text'])
+        row.to_sql("excerpts", 
+                        engine,
+                        schema=None, 
+                        if_exists='replace',
+                        index=False, 
+                        index_label=False)
+
+
+    #insert into sqlite
+
+    #return texts.apply(lambda txt: clean_text(txt))
+
+def pipeline_multiprocess(df:pd.DataFrame) -> pd.DataFrame:
+    date = datetime.datetime.now().strftime("%d%m%Y%H:%M")
+
+    df_unique_texts = deepcopy(df.drop_duplicates(subset=['excerpt']))
+    df_unique_texts = df_unique_texts[['excerptId', 'excerpt', 'state', 'city', 'source_date']]
+    #falta vetorização
+
+    logging.basicConfig(filename=f'QD-scrap_google-{date}.log',
+                        level=logging.INFO)
+    
+    df_ptbr = read_dicionario_br()
+
+
+    df_unique_texts['cleaned_text'] = df_unique_texts['excerpt'].map(preprocess)
+    df_unique_texts['cleaned_text'] = df_unique_texts['cleaned_text'].apply(lambda txt:
+                                         find_dashes_and_replace_words(txt, 
+                                                                       df_ptbr)
+                                             )
+
+    clean_and_insert(df_unique_texts)
+
+    return df_unique_texts

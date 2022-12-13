@@ -1,0 +1,29 @@
+curl -X 'POST' \
+  'http://localhost:8000/excerpts' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "term": "covid-19",
+  "state":"RJ"
+}'
+
+
+curl -X 'POST' \
+  'http://localhost:8000/excerpts' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "term": "covid-19",
+}'
+
+
+curl -X 'POST' \
+  'http://localhost:8000/excerpts' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "term": "covid-19",
+  "state":"RJ",
+  "start_date":"2020-01-01",
+  "end_date":"2020-05-01"
+}'

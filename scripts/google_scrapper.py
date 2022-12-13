@@ -10,12 +10,20 @@ import random
 
 nltk.download('punkt')
 
+PATH="."
 
+def get_any_proxy() -> dict:
+    with open(f"{PATH}/proxies_list.txt", "r") as f:
+        proxy_list = f.read().split("\n")
+    proxy = random.choice(proxy_list)
+    return proxy
+    
 def send_query(query):
     while True:
         url = "https://www.google.com.br/search?q={}".format(query)
 
-        headers = {'User-agent': 'your bot 0.1'}
+        headers = {'User-agent': 'your bot 0.1', 
+                   'proxy': get_any_proxy()}
 
         html = requests.get(url, headers=headers)
         html = requests.get(url)
@@ -51,6 +59,3 @@ def fix_spelling_in_answer(answer):
         new_answer, status_code = send_query(answer)
 
     return new_answer, status_code
-
-
-sentence_tokenizer = nltk.data.load('tokenizers/punkt/portuguese.pickle')
