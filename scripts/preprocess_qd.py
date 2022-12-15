@@ -1,7 +1,7 @@
 #preprocessing.py
 import pandas as pd
 import re
-from unidecode import unidecode
+#from unidecode import unidecode
 import logging
 import datetime
 from copy import deepcopy
@@ -104,12 +104,12 @@ def preprocess(text):
     return text
 
 
-def replaces(text):
-    #tokenizador separa essas palavras em 3 tokens
-    text = re.sub('teresina', 'cidade', text) 
-    text = re.sub('piauí', 'estado', text)
-    text = re.sub('c/c', 'concomitante', text)
-    return text
+# def replaces(text):
+#     #tokenizador separa essas palavras em 3 tokens
+#     text = re.sub('teresina', 'cidade', text) 
+#     text = re.sub('piauí', 'estado', text)
+#     text = re.sub('c/c', 'concomitante', text)
+#     return text
 
 #my functions
 def remove_special_characters(text:str):
