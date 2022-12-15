@@ -39,6 +39,60 @@ def preprocess(text):
 
 - find_dashes_and_replace_words
 
+```python
+
+def preprocess(text):
+    text = remove_special_characters(text)
+    text = remove_dash_n(text)
+    text = remove_lots_of_points(text)
+    text = remove_bad_chars(text)
+    text = spaced_letters(text)
+    text = dots_that_mess_segmentation(text)
+    text = remove_spaces(text)
+    text = join_words(text)
+    text = separate_words(text)
+    text = remove_page_breaker(text)
+    text = remove_special_characters(text)
+
+    return text
+```
+
 - clean_and_insert
 
+```python
+
+def preprocess(text):
+    text = remove_special_characters(text)
+    text = remove_dash_n(text)
+    text = remove_lots_of_points(text)
+    text = remove_bad_chars(text)
+    text = spaced_letters(text)
+    text = dots_that_mess_segmentation(text)
+    text = remove_spaces(text)
+    text = join_words(text)
+    text = separate_words(text)
+    text = remove_page_breaker(text)
+    text = remove_special_characters(text)
+
+    return text
+```
+
 - pipeline_multiprocess
+
+```python
+
+def preprocess(text):
+    text = remove_special_characters(text)
+    text = remove_dash_n(text)
+    text = remove_lots_of_points(text)
+    text = remove_bad_chars(text)
+    text = spaced_letters(text)
+    text = dots_that_mess_segmentation(text)
+    text = remove_spaces(text)
+    text = join_words(text)
+    text = separate_words(text)
+    text = remove_page_breaker(text)
+    text = remove_special_characters(text)
+
+    return text
+```
