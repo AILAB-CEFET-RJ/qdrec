@@ -88,7 +88,7 @@ def dots_that_mess_segmentation(text):
     
     return text
 
-def preprocess(text):
+def preprocess(text:str) -> str:
     text = remove_special_characters(text)
     text = remove_dash_n(text)
     text = remove_lots_of_points(text)
@@ -103,13 +103,6 @@ def preprocess(text):
     
     return text
 
-
-# def replaces(text):
-#     #tokenizador separa essas palavras em 3 tokens
-#     text = re.sub('teresina', 'cidade', text) 
-#     text = re.sub('piauí', 'estado', text)
-#     text = re.sub('c/c', 'concomitante', text)
-#     return text
 
 #my functions
 def remove_special_characters(text:str):
@@ -141,7 +134,7 @@ def get_whole_words(subtext:str) -> str:
             first_pos,
             last_pos)
 
-def contains_number(word):
+def contains_number(word:str):
     return bool(re.search(r'\d', word))
 
 def find_dashes_and_replace_words(text:str,
@@ -189,8 +182,7 @@ def find_dashes_and_replace_words(text:str,
 
 
 def clean_text(text:str,
-               window_size:int=50,
-               time_between_queries:int=3) -> str:
+               window_size:int=50) -> str:
     inicio = datetime.datetime.now()#.strftime("%Y%m%d%H:%M:%S")
     logging.info(f"TEXTO INICIAL {inicio.strftime('%Y%m%d%H:%M:%S')} -> {text}")
     dash_indexes = find_occurrences(text, "-")
@@ -253,14 +245,17 @@ def read_dicionario_br() -> pd.DataFrame:
     path = 'https://drive.google.com/uc?export=download&id='+url.split('/')[-2]
     header_list = ['Word']
     df_ptbr = pd.read_csv(path, 
-                        skiprows=0,
-                        names=header_list,
-                        header=None,
-                        sep=',')
+                          skiprows=0,
+                          names=header_list,
+                          header=None,
+                          sep=',')
     return df_ptbr
 
-def clean_and_save(text_list:list) -> None:
-    with open("de-para-ambiental.csv",
+def clean_and_save(text_list:list, 
+                   output_name:str="excerpts_cleaned") -> None:
+    date = datetime.datetime.now().strftime("%d%m%Y%H00")
+    output_name += date
+    with open(f"{output_name}.csv",
               "a+",
               encoding='utf-8') as f:
         for text in text_list:
@@ -268,8 +263,8 @@ def clean_and_save(text_list:list) -> None:
             f.write(f'{text}\t{new_text}\n')
     print("DONE!")    
 
-def pipeline(df_path:str='dataset-tecnologias-educacao.csv') -> None:
-    date = datetime.datetime.now().strftime("%d%m%Y%H:%M")
+def pipeline(df_path:str) -> None:
+    date = datetime.datetime.now().strftime("%d%m%Y%H00")
 
     logging.basicConfig(filename=f'QD-scrap_google-{date}.log',
                         level=logging.INFO)
@@ -297,17 +292,10 @@ def pipeline_multiprocess(df:pd.DataFrame) -> None:
     
     df_ptbr = read_dicionario_br()
 
-#    df['cleaned_text'] = df['excerpt'].map(preprocess)
-#    df['cleaned_text'] = df['cleaned_text'].apply(lambda txt:
-#                                         find_dashes_and_replace_words(txt, 
-#                                                                       df_ptbr)
-#                                             )
     df_unique_texts['cleaned_text'] = df_unique_texts['excerpt'].map(preprocess)
     df_unique_texts['cleaned_text'] = df_unique_texts['cleaned_text'].apply(lambda txt:
                                          find_dashes_and_replace_words(txt, 
-                                                                       df_ptbr)
-                                             )
-
+                                                                       df_ptbr))
 
     unique_text_list = df_unique_texts['cleaned_text'].unique()
 
@@ -330,6 +318,8 @@ def clean_and_insert(df_splitted:pd.DataFrame()) -> None:
     for index, row in df_splitted.iterrows():
         
         row['cleaned_text'] = clean_text(row['cleaned_text'])
+
+
         row.to_sql("excerpts", 
                         engine,
                         schema=None, 
@@ -337,12 +327,19 @@ def clean_and_insert(df_splitted:pd.DataFrame()) -> None:
                         index=False, 
                         index_label=False)
 
-
+##dev
+    # df_splitted['cleaned_text'] = df_splitted['cleaned_text'].apply(lambda row: clean_text(row))
+    # df_splitted.to_sql("excerpts", 
+    #                     engine,
+    #                     schema=None, 
+    #                     if_exists='replace',
+    #                     index=False, 
+    #                     index_label=False)
     #insert into sqlite
 
     #return texts.apply(lambda txt: clean_text(txt))
 
-def pipeline_multiprocess(df:pd.DataFrame) -> pd.DataFrame:
+def pipeline_multiprocess_db(df:pd.DataFrame) -> pd.DataFrame:
     date = datetime.datetime.now().strftime("%d%m%Y%H:%M")
 
     df_unique_texts = deepcopy(df.drop_duplicates(subset=['excerpt']))
