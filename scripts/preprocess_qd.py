@@ -306,7 +306,6 @@ def pipeline_multiprocess(df:pd.DataFrame) -> None:
 
 
 def clean(texts:pd.Series) -> pd.Series:
-
     return texts.apply(lambda txt: clean_text(txt))
 
 
@@ -318,7 +317,6 @@ def clean_and_insert(df_splitted:pd.DataFrame()) -> None:
     for index, row in df_splitted.iterrows():
         
         row['cleaned_text'] = clean_text(row['cleaned_text'])
-
 
         row.to_sql("excerpts", 
                         engine,
@@ -355,8 +353,7 @@ def pipeline_multiprocess_db(df:pd.DataFrame) -> pd.DataFrame:
     df_unique_texts['cleaned_text'] = df_unique_texts['excerpt'].map(preprocess)
     df_unique_texts['cleaned_text'] = df_unique_texts['cleaned_text'].apply(lambda txt:
                                          find_dashes_and_replace_words(txt, 
-                                                                       df_ptbr)
-                                             )
+                                                                       df_ptbr))
 
     clean_and_insert(df_unique_texts)
 
