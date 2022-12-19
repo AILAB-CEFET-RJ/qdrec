@@ -261,7 +261,6 @@ if __name__ == '__main__':
 ```
 
 ## API (em desenvolvimento)
-
 A API criada para o projeto é uma API REST que recebe um texto e retorna o texto corrigido. A API foi criada utilizando o framework Flask e está disponível no seguinte repositório:
 
 - read_excerpts
