@@ -1,6 +1,6 @@
 import string
-#from querido_diario.db.engine import DBSession
-#from querido_diario.db.models import DBExcerpts
+from querido_diario.db.engine import DBSession
+from querido_diario.db.models import DBExcerpts
 import difflib
 
 from typing import Optional
