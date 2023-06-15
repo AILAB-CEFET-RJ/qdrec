@@ -1,5 +1,11 @@
-from preprocess_qd import pipeline
+from dataclasses import dataclass
 
+from fastapi import FastAPI
 
-if __name__ == "__main__":
-    pipeline()
+from api.querido_diario.routers import excerpts
+
+from database.connection import SessionLocal, engine
+
+app = FastAPI()
+
+app.include_router(excerpts.router)
