@@ -3,7 +3,7 @@ CREATE DATABASE qdrec;
 \c qdrec;
 
 CREATE TABLE IF NOT EXISTS excerpt_metadata (
-    excerpt_id SERIAL,
+    excerpt_id TEXT,
     uf TEXT,
     cidade TEXT,
     tema TEXT,
@@ -16,7 +16,7 @@ CREATE EXTENSION IF NOT EXISTS cube;
 CREATE EXTENSION IF NOT EXISTS earthdistance;
 
 CREATE TABLE IF NOT EXISTS vectors (
-    excerpt_id INT NOT NULL,
+    excerpt_id TEXT NOT NULL,
     vectorized_excerpt TSVECTOR,
     CONSTRAINT fk_vectors
         FOREIGN KEY (excerpt_id)
@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS vectors (
 );
 
 CREATE TABLE IF NOT EXISTS named_entity (
-    excerpt_id INT NOT NULL,
-    content VARCHAR,
+    excerpt_id TEXT NOT NULL,
+    content TEXT,
     entity_type VARCHAR,
     start_offset INT,
     end_offset INT,

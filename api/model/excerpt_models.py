@@ -11,18 +11,18 @@ def object_as_dict(obj):
 class ExcerptMetadata(Base):
     __tablename__ = 'excerpt_metadata'
     __table_args__ = {'extend_existing': True} 
-    excerpt_id=Column(Integer, primary_key=True)
+    excerpt_id=Column(String(100), primary_key=True)
     uf=Column('uf', String(32))
     cidade=Column('cidade', String(32))
     tema=Column('tema', String(32))
-    data=Column('data', DateTime)
+    data=Column('data', String(32))
     named_entity = relationship("NamedEntity")
 
 class NamedEntity(Base):
     __tablename__ = 'named_entity'
     __table_args__ = {'extend_existing': True} 
-    excerpt_id = Column(Integer, ForeignKey('excerpt_metadata.excerpt_id'))
-    content=Column('content', String(32), primary_key=True)
+    excerpt_id = Column(String(100), ForeignKey('excerpt_metadata.excerpt_id'), primary_key=True)
+    content=Column('content', TEXT, primary_key=True)
     entity_type=Column('entity_type', String(32))
     start_offset=Column('start_offset', Integer)
     end_offset=Column('end_offset', Integer)
@@ -31,20 +31,4 @@ class Vectors(Base):
     __tablename__ = 'vectors'
     __table_args__ = {'extend_existing': True}
     excerpt_id = Column(Integer, ForeignKey('excerpt_metadata.excerpt_id'))
-    vectorized_excerpt = Column('vectorized_excerpt', TSVECTOR, primary_key=True
-    )
-
-#db = Database("sqlite:///:memory:")
-'''
-db.create(NamedEntity)
-
-test = NamedEntity(excerpt_id=123, content='JAIME CRUZ', entity_type='PERSON', start_offset=0, end_offset=10)
-
-session = db.session()
-session.create(test)
-
-result = session.query(NamedEntity).filter(NamedEntity.excerpt_id == 123).one()
-print(object_as_dict(result))
-
-session.commit()
-'''
+    vectorized_excerpt = Column('vectorized_excerpt', TSVECTOR, primary_key=True)
