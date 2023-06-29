@@ -73,12 +73,9 @@ def execute_csv(file):
     s = str(contents,'utf-8')
     data = StringIO(s)
     df = pd.read_csv(data)
-    i = 0
     count_excerpt = 0
     count_named_entities = 0
     for index, row in df.iterrows():
-        if i == 10:
-            break
         names = find_people(row['excerpt_id'], row['excerpt'])
         excerpt_metadata = ExcerptMetadataCreate(excerpt_id=row['excerpt_id'], uf=row['source_state_code'], cidade=row['source_territory_name'], tema=row['excerpt_subthemes'], data=row['source_created_at'])
         db_gen = get_db()
@@ -89,6 +86,5 @@ def execute_csv(file):
                 item = NamedEntityCreate(excerpt_id=name['excerpt_id'], content=name['content'], start_offset=name['start_offset'], end_offset=name['end_offset'], entity_type=name['entity_type'])
 
                 count_named_entities+=1 if (create_named_entity(db, item)) else False
-        i += 1
 
     return "Saved " + str(count_excerpt) + " excerpt ids and " + str(count_named_entities) + " named entitites"
