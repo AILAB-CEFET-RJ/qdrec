@@ -57,7 +57,7 @@ Registra uma entrada de entidade no banco de dados recebendo um JSON:
 {
     "excerpt_id": "123"
     "content": "A"
-    "entity_type": str
+    "entity_type": "PESSOA"
     "start_offset": 0
     "end_offset": 1
 }
