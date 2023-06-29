@@ -1,5 +1,7 @@
+import string
 from querido_diario.db.engine import DBSession
 from querido_diario.db.models import DBExcerpts
+import difflib
 
 from typing import Optional
 
@@ -78,3 +80,26 @@ def get_recommended_excerpts(data: ExcerptReadData):
     # get recommendations
     # return recommendations
     pass
+
+def get_entity(data: string, entity_type: string):
+    # get all entities
+    # test simulating return from db
+    entities = [{'excerpt_id': '123',
+                    'content': 'JAIME CRUZ',
+                    'start_offset': 0,
+                    'end_offset': 9,
+                    'entity_type': 'PERSON'},
+                {'excerpt_id': '234',
+                    'content': 'JAIME CRUZ',
+                    'start_offset': 1,
+                    'end_offset': 10,
+                    'entity_type': 'PERSON'}]
+    
+    for entity in entities:
+        closest_match = difflib.get_close_matches(data, [entity['content']])
+        substring = data in entity['content']
+        if (closest_match or substring) and entity['entity_type'] == entity_type:
+            print('For entry string:', data, 'closest entity found:', closest_match) if closest_match else True
+            print('start:', entity['start_offset'], 'end:', entity['end_offset'])
+
+get_entity('CRUZ', 'PERSON')
