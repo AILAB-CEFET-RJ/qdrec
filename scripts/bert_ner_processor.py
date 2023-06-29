@@ -31,14 +31,14 @@ Citação de projeto utilizado: https://github.com/neuralmind-ai/portuguese-bert
 
 from transformers import BertForTokenClassification, DistilBertTokenizerFast, pipeline
 
-def find_people(id:str, text:str) -> list:
+model = BertForTokenClassification.from_pretrained('pierreguillou/ner-bert-large-cased-pt-lenerbr')
+tokenizer = DistilBertTokenizerFast.from_pretrained('pierreguillou/bert-large-cased-pt-lenerbr'
+                                                    , model_max_length=512
+                                                    , do_lower_case=False
+                                                    )
+nlp = pipeline('ner', model=model, tokenizer=tokenizer, grouped_entities=True)
 
-    model = BertForTokenClassification.from_pretrained('pierreguillou/ner-bert-large-cased-pt-lenerbr')
-    tokenizer = DistilBertTokenizerFast.from_pretrained('pierreguillou/bert-large-cased-pt-lenerbr'
-                                                        , model_max_length=512
-                                                        , do_lower_case=False
-                                                        )
-    nlp = pipeline('ner', model=model, tokenizer=tokenizer, grouped_entities=True)
+def find_people(id:str, text:str) -> list:
 
     result = nlp(str(text).replace('- ', ''))
     names = []
