@@ -71,5 +71,4 @@ def read_vectors(excerpt_id: int, db: Session = Depends(get_db), skip: int = 0, 
 
 @router.post("/execute/")
 def execute(file: UploadFile = File(...)):
-    execute_csv(file)
-    return "Executed successfully!"
+    return execute_csv(file)
