@@ -1,5 +1,19 @@
+from io import StringIO
+from fastapi import Depends
 import pandas as pd
 import re
+
+from api.crud.crud import create_excerpt_metadata, create_named_entity
+from api.model.schemas import ExcerptMetadataCreate, NamedEntityCreate
+
+from database.connection import SessionLocal
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 def find_regex(id:str, text:str) -> list:
     docs=[]
@@ -46,19 +60,34 @@ def find_regex(id:str, text:str) -> list:
                    'end_offset': cnpj.start() + len(cnpj.group()),
                    'entity_type':"CNPJ"})
 
-    if docs != []:
-      print(docs)
-      return docs
-
-
-df = pd.read_csv('./dataset-ambiental.csv')
-i = 0
-for index, row in df.iterrows():
-    if i == 100:
-        break    
+    #if docs != []:
+     # print(docs)
+      #return docs
     
-    result = str(row['excerpt']).replace('- ', '')
-    #print(result)
+    return docs if docs else []
+
+def execute_csv_regex(file):
     
-    find_regex(row['excerpt_id'], result)
-    i += 1
+    contents = file.file.read()
+    s = str(contents,'utf-8')
+    data = StringIO(s)
+    df = pd.read_csv(data)
+    i = 0
+    count_excerpt = 0
+    count_named_entities = 0
+    for index, row in df.iterrows():
+        if i == 100:
+            break
+        docs = find_regex(row['excerpt_id'], row['excerpt'])
+        excerpt_metadata = ExcerptMetadataCreate(excerpt_id=row['excerpt_id'], uf=row['source_state_code'], cidade=row['source_territory_name'], tema=row['excerpt_subthemes'], data=row['source_created_at'])
+        db_gen = get_db()
+        db = next(db_gen)
+        count_excerpt+=1 if (create_excerpt_metadata(db, excerpt_metadata)) else False
+        if len(docs) > 0:
+            for name in docs:
+                item = NamedEntityCreate(excerpt_id=name['excerpt_id'], content=name['content'], start_offset=name['start_offset'], end_offset=name['end_offset'], entity_type=name['entity_type'])
+
+                count_named_entities+=1 if (create_named_entity(db, item)) else False
+        i += 1
+
+    return "Saved " + str(count_excerpt) + " excerpt ids and " + str(count_named_entities) + " named entitites"
