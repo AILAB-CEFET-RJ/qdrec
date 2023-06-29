@@ -78,7 +78,8 @@ def execute_csv_regex(file):
     for index, row in df.iterrows():
         if i == 100:
             break
-        docs = find_regex(row['excerpt_id'], row['excerpt'])
+        result = str(row['excerpt']).replace('- ', '')
+        docs = find_regex(row['excerpt_id'], result)
         excerpt_metadata = ExcerptMetadataCreate(excerpt_id=row['excerpt_id'], uf=row['source_state_code'], cidade=row['source_territory_name'], tema=row['excerpt_subthemes'], data=row['source_created_at'])
         db_gen = get_db()
         db = next(db_gen)
