@@ -12,6 +12,7 @@ torch = "*"
 pandas = "*"
 psycopg2 = "*"
 python-multipart = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 

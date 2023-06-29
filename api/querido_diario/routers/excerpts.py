@@ -5,7 +5,9 @@ from api.model import schemas
 from database.connection import SessionLocal
 
 from api.crud import crud
+from scripts.append_regex import execute_csv_regex
 from scripts.bert_ner_processor import execute_csv
+from scripts.law_processor import execute_csv_law
 
 def get_db():
     db = SessionLocal()
@@ -69,6 +71,17 @@ def read_vectors(excerpt_id: int, db: Session = Depends(get_db), skip: int = 0, 
         raise HTTPException(status_code=404, detail="Vector not found")
     return db_vectors
 
+
+####   EXECUTE ROUTES   ####
+
 @router.post("/execute/")
 def execute(file: UploadFile = File(...)):
     return execute_csv(file)
+
+@router.post("/execute/regex")
+def execute_regex(file: UploadFile = File(...)):
+    return execute_csv_regex(file)
+
+@router.post("/execute/law/")
+def execute_law(file: UploadFile = File(...)):
+    return execute_csv_law(file)
