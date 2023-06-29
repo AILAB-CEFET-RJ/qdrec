@@ -1,5 +1,5 @@
+import datetime
 from pydantic import BaseModel
-from datetime import date
 
 ##  EXCERPT METADATA  ##
 class ExcerptMetadataBase(BaseModel):
@@ -7,7 +7,7 @@ class ExcerptMetadataBase(BaseModel):
     uf: str
     cidade: str
     tema: str
-    data: str
+    data: datetime.date
 
 class ExcerptMetadataCreate(ExcerptMetadataBase):
     pass

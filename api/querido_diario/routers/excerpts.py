@@ -23,7 +23,7 @@ def health_check():
 ####   EXCERPT_METADATA   ####
 
 @router.get("/excerpt_metadata/{excerpt_id}", response_model=schemas.ExcerptMetadata)
-def read_excerpt_metadata_by_id(excerpt_id: int, db: Session = Depends(get_db)):
+def read_excerpt_metadata_by_id(excerpt_id: str, db: Session = Depends(get_db)):
     db_excerpt_metadata = crud.get_excerpt_metadata_by_id(db, excerpt_id=excerpt_id)
     if db_excerpt_metadata is None:
         raise HTTPException(status_code=404, detail="Excerpt metadata not found")
@@ -49,7 +49,7 @@ def read_named_entities(db: Session = Depends(get_db), skip: int = 0, limit: int
     return db_named_entities
 
 @router.get("/entities/{excerpt_id}", response_model=list[schemas.NamedEntity])
-def read_named_entities_by_id(excerpt_id: int, db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+def read_named_entities_by_id(excerpt_id: str, db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     db_named_entity = crud.get_named_entities_by_excerpt_id(db, excerpt_id, skip, limit)
     return db_named_entity
 

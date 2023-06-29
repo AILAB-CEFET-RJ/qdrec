@@ -8,6 +8,7 @@ Saiba mais https://queridodiario.ok.org.br/
 
 - Docker
 - Python 3.9+
+- Pipenv
 
 ## API
 
