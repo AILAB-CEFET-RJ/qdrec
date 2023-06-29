@@ -7,7 +7,7 @@ class ExcerptMetadataBase(BaseModel):
     uf: str
     cidade: str
     tema: str
-    data: datetime.date
+    data: datetime.datetime
 
 class ExcerptMetadataCreate(ExcerptMetadataBase):
     pass
