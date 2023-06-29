@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from api.model import schemas
 
@@ -69,7 +69,7 @@ def read_vectors(excerpt_id: int, db: Session = Depends(get_db), skip: int = 0, 
         raise HTTPException(status_code=404, detail="Vector not found")
     return db_vectors
 
-@router.get("/execute/", status_code=200)
-def execute():
-    execute_csv()
+@router.post("/execute/")
+def execute(file: UploadFile = File(...)):
+    execute_csv(file)
     return "Executed successfully!"

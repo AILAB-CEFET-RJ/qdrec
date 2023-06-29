@@ -1,3 +1,4 @@
+from io import StringIO
 from fastapi import Depends
 import pandas as pd
 
@@ -66,9 +67,12 @@ def find_people(id:str, text:str) -> list:
 
 ### FOR TESTS PURPOSE ONLY ###
 
-def execute_csv():
+def execute_csv(file):
     
-    df = pd.read_csv('E:\Reissel\Faculdade\BCC\Projeto e Construção de Sistemas\qdrec\dataset-ambiental.csv')
+    contents = file.file.read()
+    s = str(contents,'utf-8')
+    data = StringIO(s)
+    df = pd.read_csv(data)
     i = 0
     for index, row in df.iterrows():
         if i == 100:
