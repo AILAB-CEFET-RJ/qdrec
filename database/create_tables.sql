@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS excerpt_metadata (
     uf TEXT,
     cidade TEXT,
     tema TEXT,
-    data DATE,
+    data TIMESTAMP,
     PRIMARY KEY(excerpt_id)
 );
 
