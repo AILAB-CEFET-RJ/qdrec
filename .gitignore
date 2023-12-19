@@ -1,7 +1,0 @@
-*ipynb
-*.pyc
-*__pycache__*
-*.csv
-*.db
-
-/postgres-data/*
