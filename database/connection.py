@@ -1,8 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from urllib.parse import quote
 
-engine = create_engine("postgresql://postgres:postgres@127.0.0.1:5432/qdrec")
+# conexão com senha normal
+engine = create_engine("postgresql://user:password@localhost/NomedoDatabase")
+
+# conexão com senha com caracteres especiais
+# engine = create_engine("postgresql://user:%s@localhost/NomedoDatabase" % quote('password'))
 
 engine.connect()
 
