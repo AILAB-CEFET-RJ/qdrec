@@ -1,3 +1,7 @@
+--CREATE DATABASE qdrec;
+
+--\c qdrec;
+
 CREATE TABLE IF NOT EXISTS excerpt_metadata (
     excerpt_id TEXT,
     uf TEXT,
